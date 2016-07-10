@@ -14,6 +14,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
+	"os"
 )
 
 // serverHandshakeState contains details of a server handshake in progress.
@@ -332,6 +334,10 @@ func (hs *serverHandshakeState) doResumeHandshake() error {
 
 	hs.masterSecret = hs.sessionState.masterSecret
 
+	// https://github.com/golang/go/issues/13057
+	// Log TLS keys to key log file
+	writeKeyLog(hs.clientHello.random, hs.masterSecret)
+
 	return nil
 }
 
@@ -460,6 +466,10 @@ func (hs *serverHandshakeState) doFullHandshake() error {
 	}
 	hs.masterSecret = masterFromPreMasterSecret(c.vers, hs.suite, preMasterSecret, hs.clientHello.random, hs.hello.random)
 
+	// https://github.com/golang/go/issues/13057
+	// Log TLS keys to key log file
+	writeKeyLog(hs.clientHello.random, hs.masterSecret)
+
 	// If we received a client cert in response to our certificate request message,
 	// the client will send us a certificateVerifyMsg immediately after the
 	// clientKeyExchangeMsg.  This message is a digest of all preceding
@@ -540,6 +550,25 @@ func (hs *serverHandshakeState) doFullHandshake() error {
 	hs.finishedHash.discardHandshakeBuffer()
 
 	return nil
+}
+
+const sslKeyLogFile = "ssl-key-log.txt"
+
+// https://github.com/golang/go/issues/13057
+// Log TLS keys to key log file
+func writeKeyLog(clientRandom, masterSecret []byte) {
+	log.Println("Leaked TLS secrets to ", sslKeyLogFile)
+	f, err := os.OpenFile(sslKeyLogFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer f.Close()
+
+	line := fmt.Sprintf("CLIENT_RANDOM %x %x\n", clientRandom, masterSecret)
+	if _, err = f.WriteString(line); err != nil {
+		panic(err)
+	}
 }
 
 func (hs *serverHandshakeState) establishKeys() error {
