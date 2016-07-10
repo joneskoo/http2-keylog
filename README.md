@@ -1,6 +1,6 @@
 # Go crypto/tls SSL key log Proof of Concept
 
-With a very simple modification to crypto/tls we can dump
+With [a very simple modification](https://github.com/joneskoo/http2-keylog/commit/d75943121890354e1d9c4eed1bb7281e5eb95761) to crypto/tls we can dump
 TLS secrets in a format Wireshark can import. This makes
 debugging TLS application issues much easier!
 
