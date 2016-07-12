@@ -17,6 +17,7 @@ func main() {
 		log.Fatalln("Usage: client <url>")
 	}
 
+	log.Println("Leaking TLS keys to", *sslKeyLogfile)
 	f, err := os.OpenFile(*sslKeyLogfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		log.Fatalln(err)
