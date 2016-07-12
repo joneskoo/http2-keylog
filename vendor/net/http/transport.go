@@ -1745,6 +1745,7 @@ func cloneTLSConfig(cfg *tls.Config) *tls.Config {
 		MinVersion:               cfg.MinVersion,
 		MaxVersion:               cfg.MaxVersion,
 		CurvePreferences:         cfg.CurvePreferences,
+		KeyLogWriter:             cfg.KeyLogWriter,
 	}
 }
 
@@ -1774,5 +1775,6 @@ func cloneTLSClientConfig(cfg *tls.Config) *tls.Config {
 		MinVersion:               cfg.MinVersion,
 		MaxVersion:               cfg.MaxVersion,
 		CurvePreferences:         cfg.CurvePreferences,
+		KeyLogWriter:             cfg.KeyLogWriter,
 	}
 }
