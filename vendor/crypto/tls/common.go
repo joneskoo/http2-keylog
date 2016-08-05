@@ -387,6 +387,13 @@ type Config struct {
 	// The default, none, is correct for the vast majority of applications.
 	Renegotiation RenegotiationSupport
 
+	// KeyLogWriter is a debug log stream of all TLS master secrets
+	// as negotiated between client and server.
+	// KeyLogWriter is disabled when nil (default) and must only be
+	// enabled explicitly for debugging as by definition it compromises
+	// the security.
+	KeyLogWriter io.Writer
+
 	serverInitOnce sync.Once // guards calling (*Config).serverInit
 
 	// mutex protects sessionTicketKeys
@@ -625,6 +632,16 @@ func (c *Config) BuildNameToCertificate() {
 			c.NameToCertificate[san] = cert
 		}
 	}
+}
+
+// writeKeyLog logs client random and master secret if logging enabled
+// by setting KeyLogWriter.
+func (c *Config) writeKeyLog(clientRandom, masterSecret []byte) error {
+	if c.KeyLogWriter == nil {
+		return nil
+	}
+	_, err := fmt.Fprintf(c.KeyLogWriter, "CLIENT_RANDOM %x %x\n", clientRandom, masterSecret)
+	return err
 }
 
 // A Certificate is a chain of one or more certificates, leaf first.

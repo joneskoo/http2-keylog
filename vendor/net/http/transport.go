@@ -2083,6 +2083,7 @@ func cloneTLSConfig(cfg *tls.Config) *tls.Config {
 		CurvePreferences:            cfg.CurvePreferences,
 		DynamicRecordSizingDisabled: cfg.DynamicRecordSizingDisabled,
 		Renegotiation:               cfg.Renegotiation,
+		KeyLogWriter:                cfg.KeyLogWriter,
 	}
 }
 
@@ -2114,6 +2115,7 @@ func cloneTLSClientConfig(cfg *tls.Config) *tls.Config {
 		CurvePreferences:            cfg.CurvePreferences,
 		DynamicRecordSizingDisabled: cfg.DynamicRecordSizingDisabled,
 		Renegotiation:               cfg.Renegotiation,
+		KeyLogWriter:                cfg.KeyLogWriter,
 	}
 }
 
