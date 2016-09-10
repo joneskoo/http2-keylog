@@ -15,11 +15,6 @@ var (
 	listenAddr    = flag.String("listen", "[::1]:10443", "ip:port to listen on")
 )
 
-func handler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("This is an example server.\n"))
-}
-
 func main() {
 	flag.Parse()
 	log.Printf("Listening at https://%v/\n", *listenAddr)
@@ -40,4 +35,9 @@ func main() {
 		MaxHeaderBytes: 1 << 10,
 	}
 	log.Fatal(s.ListenAndServeTLS("cert.pem", "key.pem"))
+}
+
+func handler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("This is an example server.\n"))
 }
