@@ -1,8 +1,9 @@
+// Derived from https://golang.org/src/crypto/tls/generate_cert.go.
+// Original copyright notice below.
+//
 // Copyright 2009 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
-// Derived from https://golang.org/src/crypto/tls/generate_cert.go
 
 // Generate a self-signed X.509 certificate for a TLS server.
 
