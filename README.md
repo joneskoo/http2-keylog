@@ -10,31 +10,34 @@ The key log must be enabled in application being debugged,
 normally requiring a change in the source code. Both client
 and server can be modified to log the secrets.
 
-The required KeyLogWriter feature was introduced in commit
-[golang/go#320bd56](https://github.com/golang/go/commit/320bd562cbb24a01beb02706c42d06a290160645)
-and will be available in Go 1.8 when it is released.
+**The required tls.Config#KeyLogWriter feature will be in Go 1.8 release
+(expected to be released around January 31st, 2017). Until then,
+installing the development version ("go tip") is required.**
 
-[golang/go #13057 crypto/tls: support NSS-formatted key log file](https://github.com/golang/go/issues/13057)
+## Installation ##
+
+Requirements: Go 1.8 or development version ("tip").
+
+```
+$ go get -u github.com/joneskoo/http2-keylog/h2keylog-server
+$ go get -u github.com/joneskoo/http2-keylog/h2keylog-client
+```
+
 
 ## Capturing and decoding TLS client traffic
 
-With go development version or 1.8, logging the TLS master secrets
-for use with Wireshark is easy. Just set KeyLogWriter in tls.Config
-to a writer (e.g. an open file).
-
-See [h2keylog-client source code](https://github.com/joneskoo/http2-keylog/blob/master/h2keylog-client/client.go#L41-L50).
+See [h2keylog-client source code](https://github.com/joneskoo/http2-keylog/blob/master/h2keylog-client/client.go).
 
 ```bash
-$ go get github.com/joneskoo/http2-keylog/h2keylog-client
-$ h2keylog-client https://http2.golang.org/
-2016/09/10 23:26:40 Leaking TLS keys to ssl-keylog.txt
+$ h2keylog-client https://http2.golang.org
+Leaking TLS keys to ssl-keylog.txt
+----------------------
 HTTP/2.0 200 OK
-Content-Length: 1708
+Content-Length: 1593
 Content-Type: text/html; charset=utf-8
-Date: Sat, 10 Sep 2016 20:26:41 GMT
+Date: Wed, 16 Nov 2016 23:05:06 GMT
 
-<html>
-…
+[body not shown]
 ```
 
 You need to start a packet capture, e.g. with Wireshark, before
@@ -55,24 +58,13 @@ in Wireshark to decode the traffic.
 
 ## Capturing and decoding TLS server traffic
 
-Run the server
+See [h2keylog-server source code](https://github.com/joneskoo/http2-keylog/blob/master/h2keylog-server/server.go).
 
 ```bash
-$ go get github.com/joneskoo/http2-keylog/h2keylog-server
 $ h2keylog-server
-2016/07/12 23:29:07 Listening at https://[::1]:10443/
-2016/07/12 23:29:07 Leaking TLS keys to ssl-keylog.txt
+Listening at https://:10443/
+Leaking TLS keys to ssl-keylog.txt
 ```
-
-You need to have TLS certificates to run the test server. You can
-generate the required files with:
-
-```
-$ (eval `go tool dist env`; go run $GOROOT/src/crypto/tls/generate_cert.go -host localhost)
-2016/07/10 09:51:45 written cert.pem
-2016/07/10 09:51:45 written key.pem
-```
-
 
 Meanwhile in another terminal, and while Wireshark capture is active:
 
